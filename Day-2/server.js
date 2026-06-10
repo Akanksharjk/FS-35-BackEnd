@@ -244,6 +244,10 @@ const data = [
   }
 ]
 
+app.get('/', (req, res)=>{
+    res.send("Back is Runing")
+})
+
 app.get("/port", (req, res) => {
   res.send(data);
 });
