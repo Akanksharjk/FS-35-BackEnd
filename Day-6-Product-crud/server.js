@@ -8,6 +8,23 @@ connectDB()
 
 app.use(express.json())
 
+app.get('/api/product', async (req, res) => {
+    try {
+        let allProduct = await productModel.find()
+        return res.status(200).json({
+            success: true,
+            message: "All products fatched",
+            data: allProduct
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        })
+    }
+})
+
+
 app.post('/api/product/create', async (req, res) => {
     try {
         const { productName, currency, amount, description, category } = req.body
@@ -42,14 +59,15 @@ app.post('/api/product/create', async (req, res) => {
     }
 })
 
-app.get('/api/product', async (req, res) => {
+app.delete('/api/product/:productId', async (req, res) => {
     try {
-        let allProduct = await productModel.find()
+
+        let { productId } = req.params
+        await productModel.findByIdAndDelete(productId)
 
         return res.status(200).json({
             success: true,
-            message: "All product fetched",
-            data: allProduct
+            message: "Product Delete"
         })
     } catch (error) {
         return res.status(500).json({
@@ -58,7 +76,6 @@ app.get('/api/product', async (req, res) => {
         })
     }
 })
-
 app.listen(3000, () => {
     console.log("server is runing on port 3000")
 })
