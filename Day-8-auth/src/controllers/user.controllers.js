@@ -1,0 +1,96 @@
+const userModel = require("../models/user.model")
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken");
+
+
+
+const registerController = async (req, res) => {
+    try {
+        const { name, email, password } = req.body
+
+        if (!name || !email || !password)
+            return res.status(400).json({
+                success: false,
+                message: "All fileds are required"
+            })
+        const hashPass = bcrypt.hashSync(password, 10)
+
+        const user = await userModel.create({
+            name,
+            email,
+            password: hashPass
+        })
+
+        if (!user)
+            return res.status(400).json({
+                success: false,
+                message: "User registrating failed"
+            })
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: '1h'
+        })
+        res.cookie('secret', token)
+
+        return res.status(201).json({
+            success: true,
+            message: 'User registerd',
+            data: user,
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Somthing went worng",
+            error
+        })
+    }
+}
+
+const loginController = async (req, res) => {
+    try {
+        const { email, password } = req.body
+        if (!email || !password)
+            return res.status(400).json({
+                success: false,
+                message: "Email and Password are required"
+            })
+        const user = await userModel.findOne({ email })
+
+        if (!user)
+            return res.status(404).json({
+                success: false,
+                message: "user Not found"
+            })
+
+        const comarePass = bcrypt.compareSync(password, user.password)
+
+        if (!comarePass)
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials"
+            })
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+            expiresIn: "1h"
+        })
+
+        res.cookie("secret", token)
+
+        return res.status(200).json({
+            success: true,
+            message: "User LoggedIn",
+            data: user
+        })
+    } catch (error) {
+        return res.status(200).json({
+            success: false,
+            message: "Somthing went worng",
+            error
+        })
+
+    }
+}
+
+module.exports = {
+    registerController,
+    loginController
+}
