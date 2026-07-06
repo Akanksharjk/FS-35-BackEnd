@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
+import { api } from "../config/axiosInstance";
 
 const Register = ({ setToggle }) => {
+  const [formData, setFormData] = useState({})
+
+  const handlechange = (e) =>{
+    let {name, value} = e.target
+    setFormData({...formData, [name]: value})
+  }
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
+    try {
+      let res = await api.post('/api/auth/register', formData)
+      console.log(res)
+    } catch (error) {
+      console.log('error in register api', error)
+    }
+  }
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-slate-900 rounded-2xl shadow-xl p-8 border border-slate-800">
@@ -12,14 +28,18 @@ const Register = ({ setToggle }) => {
           Sign up to get started
         </p>
 
-        <form className="mt-8 space-y-5">
+        <form 
+          onSubmit={handleSubmit}
+        className="mt-8 space-y-5">
           <div>
             <label className="block text-sm text-slate-300 mb-2">
               Full Name
             </label>
 
             <input
+             onChange={handlechange}
               type="text"
+              name="name"
               placeholder="Enter your full name"
               className="w-full px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-700 outline-none focus:border-blue-500"
             />
@@ -31,7 +51,10 @@ const Register = ({ setToggle }) => {
             </label>
 
             <input
+             onChange={handlechange}
+
               type="email"
+              name="email"
               placeholder="Enter your email"
               className="w-full px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-700 outline-none focus:border-blue-500"
             />
@@ -43,7 +66,10 @@ const Register = ({ setToggle }) => {
             </label>
 
             <input
+             onChange={handlechange}
+
               type="password"
+              name="password"
               placeholder="Create a password"
               className="w-full px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-700 outline-none focus:border-blue-500"
             />
@@ -56,6 +82,7 @@ const Register = ({ setToggle }) => {
 
             <input
               type="password"
+              name="confirmPassword"
               placeholder="Confirm your password"
               className="w-full px-4 py-3 rounded-lg bg-slate-800 text-white border border-slate-700 outline-none focus:border-blue-500"
             />
