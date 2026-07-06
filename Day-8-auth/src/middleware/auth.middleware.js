@@ -1,0 +1,25 @@
+const jwt = require('jsonwebtoken')
+const userModel = require("../models/user.model")
+
+
+const authMiddleware = async (req, res, next) => {
+    const token = req.cookies.secret
+
+    if (!token)
+        return res.status(404).json({
+            success: false,
+            message: "Token not found"
+        })
+
+    const decode = Jwt.verify(token, process.env.JWT_SECRET_KEY)
+    if (!decode)
+        return res.status(400).json({
+            success: false,
+            message: "Invalid token"
+        })
+    const user = await userModel.findById(decode.id)
+    req.user = user
+    next()
+}
+
+module.exports = authMiddleware
