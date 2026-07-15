@@ -1,0 +1,89 @@
+import mongoose from "mongoose";
+
+const userSchema = mongoose.Schema({
+    username: {
+        type: String,
+        required: [true, "username is required"],
+        unique: true,
+        trim: true
+    },
+    fullName: {
+        type: String,
+        required: [true, "fullname is required"],
+        trim: true
+    },
+    email: {
+        type: String,
+        required: [true, "email is required"],
+        unique: true,
+        trim: true
+    },
+    password: {
+        type: String,
+        required: [true, 'password is required'],
+        unique: true,
+        minlengh: 8
+    },
+    mobile: {
+        type: String,
+        unique: true,
+        trim: true,
+        minlengh: 10,
+        maxlengh: 10,
+    },
+    followers: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users"
+        }
+    ],
+    followings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
+    }],
+    posts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'posts'
+        }
+    ],
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: comments
+        }
+    ],
+    stories: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "stories"
+        }
+    ],
+    bio: {
+        type: String
+    },
+    dob: {
+        type: Data
+    },
+    reels: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "reels"
+        }
+    ],
+    profile_pic: {
+        type: String,
+    },
+    saves: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "posts"
+        }
+    ]
+},
+    {
+        timestamps: true
+    })
+
+const userModel = mongoose.model("users", userSchema)
+export default userModel
