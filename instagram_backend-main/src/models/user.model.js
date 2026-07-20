@@ -1,0 +1,92 @@
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema(
+    {
+        username:{
+            type:String,
+            require:[true, "username is required"],
+            unique:true,
+            trim:true
+        },
+        fullname:{
+            type:String,
+            require:[true, 'fullname is required'],
+            trim:true
+        },
+        email:{
+            type:String,
+            require:[true, "email is required"],
+            unique:true,
+            trim:true
+        },
+        password:{
+            type:String,
+            require:[true, "password is required"],
+            unique:true,
+            minlength:8,
+        },
+        mobile:{
+            type:String,
+            unique:true,
+            trim:true,
+            minlength:10,
+            maxlength:10
+        },
+        followers:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'users'
+            }
+        ],
+        following:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'users'
+            }
+        ],
+         post:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'post'
+            }
+        ],
+        comments:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'comments'
+            }
+        ],
+        stories:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'stories'
+            }
+        ],
+        bio:{
+            type:String,
+        },
+        dob:{
+            tpye:Date
+        },
+        reels:[
+             {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'reels'
+            }
+        ],
+        profile_pic:{
+            type:String
+        },
+        save:[
+            {
+                type:mongoose.Schema.Types.ObjectId,
+                ref:'posts'
+            }
+        ],
+    }, {
+        timestamps:true
+    }
+)
+
+const userModel = mongoose.model("users", userSchema)
+export default userModel

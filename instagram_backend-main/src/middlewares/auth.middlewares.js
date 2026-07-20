@@ -1,0 +1,31 @@
+import dotenv from 'dotenv'
+dotenv.config()
+import jwt from 'jsonwebtoken'
+import userModel from '../models/user.model.js'
+export const authMiddleware = async (req, res, next) => {
+    try {
+        let token = req.cookies.accessToken
+
+        if (!token)
+            return res.status(404).json({
+                success: false,
+                message: "Token not found"
+            })
+
+        let decode = jwt.verify(token, process.env.JWT_SECERT)
+
+        if (!decode) return res.status(401).json({
+            success: false,
+            message: "Unauthrized"
+        })
+
+        let user = await userModel.findById(decode.id).select("-password")
+        req.user = user
+        next()
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: "Validation error"
+        })
+    }
+}
