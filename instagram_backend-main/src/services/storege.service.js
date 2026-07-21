@@ -4,16 +4,16 @@ dotenv.config()
 import ImageKit from 'imagekit'
 
 const storageInstance = new ImageKit({
-    publicKey : process.env.IK_PUB_KEY,
-    privateKey:process.env.IK_PRI_KEY,
+    publicKey: process.env.IK_PUB_KEY,
+    privateKey: process.env.IK_PRI_KEY,
     urlEndpoint: process.env.IK_URL
 })
 
-export const sendFiles = async (file, fileName)=>{
+export const sendFiles = async (file, fileName) => {
     let obj = {
         file,
         fileName,
-        folder:"instagram-backend-main"
+        folder: "instagram-backend-main"
     }
 
     return await storageInstance.upload(obj)

@@ -1,92 +1,103 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcrypt'
 
 const userSchema = new mongoose.Schema(
     {
-        username:{
-            type:String,
-            required:[true, "username is required"],
-            unique:true,
-            trim:true
+        username: {
+            type: String,
+            required: [true, "username is required"],
+            unique: true,
+            trim: true
         },
-        fullname:{
-            type:String,
-            require:[true, 'fullname is required'],
-            trim:true
+        fullname: {
+            type: String,
+            required: [true, 'fullname is required'],
+            trim: true
         },
-        email:{
-            type:String,
-            required:[true, "email is required"],
-            unique:true,
-            trim:true
+        email: {
+            type: String,
+            required: [true, "email is required"],
+            unique: true,
+            trim: true
         },
-        password:{
-            type:String,
-            required:[true, "password is required"],
+        password: {
+            type: String,
+            required: [true, "password is required"],
             // unique:true,
-            minlength:8,
+            minlength: 8,
         },
-        mobile:{
-            type:String,
-            unique:true,
-            trim:true,
-            minlength:10,
-            maxlength:10
+        mobile: {
+            type: String,
+            unique: true,
+            trim: true,
+            minlength: 10,
+            maxlength: 10
         },
-        followers:[
+        followers: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'users'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
             }
         ],
-        following:[
+        following: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'users'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'users'
             }
         ],
-         post:[
+        post: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'post'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'post'
             }
         ],
-        comments:[
+        comments: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'comments'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'comments'
             }
         ],
-        stories:[
+        stories: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'stories'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'stories'
             }
         ],
-        bio:{
-            type:String,
+        bio: {
+            type: String,
         },
-        dob:{
-            type:Date
+        dob: {
+            type: Date
         },
-        reels:[
-             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'reels'
+        reels: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'reels'
             }
         ],
-        profile_pic:{
-            type:String
+        profile_pic: {
+            type: String
         },
-        save:[
+        save: [
             {
-                type:mongoose.Schema.Types.ObjectId,
-                ref:'posts'
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'posts'
             }
         ],
     }, {
-        timestamps:true
-    }
+    timestamps: true
+}
 )
+
+userSchema.pre('save', async function(){
+    if(!this.isModified('password'))return
+
+    this.password = await bcrypt.hash(this.password, 10)
+})
+
+userSchema.methods.comparePass = function(password){
+    return bcrypt.compareSync(password, this.password)
+}
 
 const userModel = mongoose.model("users", userSchema)
 export default userModel
