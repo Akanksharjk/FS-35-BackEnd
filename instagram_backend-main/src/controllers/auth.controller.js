@@ -49,3 +49,15 @@ export const registerController = async (req, res)=>{
         })
     }
 }
+
+export const  loginController = async(req, res)=>{
+    try {
+        const {email, password} = req.body
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:"Internal server Error",
+            error: error.message
+        })
+    }
+}
