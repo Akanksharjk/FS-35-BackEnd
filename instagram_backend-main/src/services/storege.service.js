@@ -12,7 +12,7 @@ const storageInstance = new ImageKit({
 export const sendFiles = async (file, fileName)=>{
     let obj = {
         file,
-        filename,
+        fileName,
         folder:"instagram-backend-main"
     }
 

@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
     {
         username:{
             type:String,
-            require:[true, "username is required"],
+            required:[true, "username is required"],
             unique:true,
             trim:true
         },
@@ -15,14 +15,14 @@ const userSchema = new mongoose.Schema(
         },
         email:{
             type:String,
-            require:[true, "email is required"],
+            required:[true, "email is required"],
             unique:true,
             trim:true
         },
         password:{
             type:String,
-            require:[true, "password is required"],
-            unique:true,
+            required:[true, "password is required"],
+            // unique:true,
             minlength:8,
         },
         mobile:{
@@ -66,7 +66,7 @@ const userSchema = new mongoose.Schema(
             type:String,
         },
         dob:{
-            tpye:Date
+            type:Date
         },
         reels:[
              {
