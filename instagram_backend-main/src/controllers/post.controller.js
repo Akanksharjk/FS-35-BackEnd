@@ -1,40 +1,89 @@
 import Postmodel from "../models/post.model.js"
 import { sendFiles } from "../services/storege.service.js"
 
-export const createPostController = async (req, res)=>{
+export const createPostController = async (req, res) => {
     try {
-        let {caption, location} = req.body
+        let { caption, location } = req.body
 
         let files = req.files
 
-        if(!files)
+        if (!files)
             return res.status(400).json({
-            success:false,
-            message: "Media is required"
-    })
+                success: false,
+                message: "Media is required"
+            })
 
-    let uploadedImage = await Promise.all(
-        files.map(async (elem)=>{
-            return await sendFiles(elem.buffer, elem.originalname)
+        let uploadedImage = await Promise.all(
+            files.map(async (elem) => {
+                return await sendFiles(elem.buffer, elem.originalname)
+            })
+        )
+
+        let newPost = await Postmodel.create({
+            caption,
+            location,
+            media_urls: uploadedImage.map((elem) => elem.url)
         })
-    )
 
-    let newPost = await Postmodel.create({
-        caption,
-        location,
-        media_urls: uploadedImage.map((elem) => elem.url)
-    })
-
-    return res.status(201).json({
-        success:true,
-        message:"Post created successfully",
-        data: newPost
-    })
+        return res.status(201).json({
+            success: true,
+            message: "Post created successfully",
+            data: newPost
+        })
     } catch (error) {
         return res.status(500).json({
-            success:false,
-            message:"Internal server error",
+            success: false,
+            message: "Internal server error",
             error
+        })
+    }
+}
+
+export const getAllPostController = async (req, res) => {
+    try {
+        let allPost = await Postmodel.find()
+
+        return res.status(200).json({
+            success: true,
+            message: "All post fetched",
+            data: allPost
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error "
+        })
+    }
+}
+
+export const updatePostController = async (req, res) => {
+    try {
+        let post_id = req.params.id
+
+        if (!req.body)
+            return res.status(400).json({
+                success: false,
+                message: "Fields are required"
+            })
+
+        let updatePost = await Postmodel.findByIdAndUpdate(
+            post_id,
+            {
+                $set: req.body
+            },
+            {
+                new: true
+            }
+        )
+        return res.status(200).json({
+            success: true,
+            message: "post update",
+            data: updatePost
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
         })
     }
 }
