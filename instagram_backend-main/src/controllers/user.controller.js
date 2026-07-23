@@ -280,6 +280,46 @@ export const getFollower = async (req, res) => {
     }
 }
 
-export const changePassword = async (req, res)=>{
-    
+export const changePassword = async (req, res) => {
+    try {
+        const { passowrd, newPassword } = req.body
+
+        if (!password || !newPassword) return res.status(400).json({
+            success: false,
+            message: "both fields are required"
+        })
+
+        if (password === newPassword) return res.status(409).json({
+            success: false,
+            message: "enter different password"
+        })
+
+        const user = await userModel.findById(req.user.id)
+
+        if (!user) return res.status(404).json({
+            success: fasle,
+            message: "user details not found"
+        })
+
+        const isPasswordMatched = user.comparePass(password)
+
+        if (!isPasswordMatched) return res.status(400).json({
+            success: false,
+            message: "incorrect password"
+        })
+
+        user.password = newPassword
+
+        await user.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "password changed successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "internal server error"
+        })
+    }
 }
