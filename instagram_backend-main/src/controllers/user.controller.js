@@ -115,30 +115,136 @@ export const searchUser = async (req, res) => {
     }
 }
 
-export const followUser = async (req, res) =>{
-    const targetUserId = req.params.id
+export const followUser = async (req, res) => {
+    try {
+        const targetUserId = req.params.id
 
-    if(targetUserId === req.user.id) return res.status(400).json({
-        success:false,
-        message:"you can follow yourself"
-    })
+        if (targetUserId === req.user.id) return res.status(400).json({
+            success: false,
+            message: "you can follow yourself"
+        })
 
-    const loggedInUser = await userModel.findById(req.user.id)
-    const targetUser = await userModel.findById(targetUserId)
+        const loggedInUser = await userModel.findById(req.user.id)
+        const targetUser = await userModel.findById(targetUserId)
 
-    if(!targetUser) return res.status(404).json({
-        success:false,
-        message:"user not found"
-    })
+        if (!targetUser) return res.status(404).json({
+            success: false,
+            message: "user not found"
+        })
 
-    const alreadyExit = loggedInUser.followings.includes(targetUserId)
+        const alreadyExit = loggedInUser.followings.includes(targetUserId)
 
-    if(alreadyExit) return res.status(400).json({
-        success:false,
-        message:"you alredy follow this user "
-    })
+        if (alreadyExit) return res.status(400).json({
+            success: false,
+            message: "you alredy follow this user "
+        })
 
-    
+        loggedInUser.followings.push(targetUserId)
+        targetUser.followers.push(req.user.id)
+
+        await loggedInUser.save()
+        await targetUser.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "user followed successfully",
+            targetUser,
+            loggedInUser
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "internal server error",
+            error: error.message
+        })
+    }
 }
 
+export const followingUser = async (req, res) => {
+    try {
+        const targetUserId = req.params.id
 
+        if (targetUserId === req.user.id) return res.status(400).json({
+            success: false,
+            message: "you can follow yourself"
+        })
+
+        const loggedInUser = await userModel.findById(req.user.id)
+        const targetUser = await userModel.findById(targetUserId)
+
+        if (!targetUser) return res.status(404).json({
+            success: false,
+            message: "user not found"
+        })
+
+        const alreadyExit = loggedInUser.followers.includes(targetUserId)
+
+        if (alreadyExit) return res.status(400).json({
+            success: false,
+            message: "you alredy follow this user "
+        })
+
+        loggedInUser.followings.push(targetUserId)
+        targetUser.followers.push(req.user.id)
+
+        await loggedInUser.save()
+        await targetUser.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "user followed successfully",
+            targetUser,
+            loggedInUser
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "internal server error",
+            error: error.message
+        })
+    }
+}
+
+export const unfollowUser = async (req, res) => {
+    try {
+        const targetUserId = req.params.id
+
+        if (req.user.id === targetUserId) return res.status(400).json({
+            success: false,
+            message: "you cannot unfollow yourself"
+        })
+
+        const loggedInUser = await userModel.findById(req.user.id)
+        const targetUser = await userModel.findById(targetUserId)
+
+        if (!targetUser) return res.status(404).json({
+            success: false,
+            message: "user not found"
+        })
+        const alreadyExit = loggedInUser.followings.includes(targetUserId)
+
+        if (!alreadyExit) return res.status(400).json({
+            success: false,
+            message: "you did not follow this user"
+        })
+
+        loggedInUser.followings.pull(targetUserId)
+        targetUser.followers.pull(req.user.id)
+
+        loggedInUser.save()
+        targetUser.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "user unfollow successfully",
+            loggedInUser,
+            targetUser
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "internal server error",
+            error: error.message
+        })
+    }
+}
