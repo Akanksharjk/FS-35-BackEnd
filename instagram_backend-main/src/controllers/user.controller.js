@@ -248,3 +248,34 @@ export const unfollowUser = async (req, res) => {
         })
     }
 }
+
+export const getFollower = async (req, res) => {
+    try {
+        const targetUserId = req.params.id
+
+        if (!targetUserId) return res.status(400).json({
+            success: false,
+            message: "id is required"
+        })
+
+        const user = await userModel.findById(targetUserId).populate("followers", "username fullName profile_pic")
+
+        if (!user) return res.status(404).json({
+            success: false,
+            message: "user not found"
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "followers fetched successfully",
+            followers: user.followers,
+            count: user.followers.length
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "internal server error",
+            error: error.message
+        })
+    }
+}
