@@ -1,26 +1,26 @@
 import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
-    text:{
-        type:String,
-        required:[true, "text is required"]
+    text: {
+        type: String,
+        required: [true, "text is required"]
     },
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"users"
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
     },
-    post:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"posts"
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "posts"
     },
-    likes:[
+    likes: [
         {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"users"
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "users"
         }
     ]
 }, {
-    timestamps:true
+    timestamps: true
 })
 
 const commentModel = mongoose.model("comment", commentSchema)
